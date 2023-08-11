@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flex-service
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+    cloud.google.com/backend-config: '{"default": "flex-backend-config"}'
+  labels:
+    app.kubernetes.io/name: "flex-service"
+    app.kubernetes.io/component: "service"
+    app.kubernetes.io/tier: "web"
+    app.kubernetes.io/version: "1"
+spec:
+  type: ClusterIP
+  selector:
+    app: flex
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

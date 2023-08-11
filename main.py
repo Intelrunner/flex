@@ -3,22 +3,21 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, FloatField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
 import os
-
+from babel.numbers import format_currency
 app = Flask(__name__)
 # Use environment variable for secret key
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'boobookitty')
 
-
 class ComputeForm(FlaskForm):
-    customer_name = StringField('Customer Name', validators=[DataRequired()])
+    customer_name = StringField('Customer Name', validators=[DataRequired(message='Please enter a customer name')])
     hourly_spend = FloatField(
-        'Hourly Spend on Eligible Compute', validators=[DataRequired()])
-    three_year_flex = FloatField('Percentage of 3 Year Flex', validators=[
-                                 DataRequired(), NumberRange(0, 100)])
+        'Hourly Spend on Eligible Compute (in $)', validators=[NumberRange(0, 10000, message='Please enter a number between 0 and 10000')])
+    three_year_flex = FloatField('$ of 3 Year Flex', validators=[
+                                NumberRange(0, 10000,message='Please enter a number between 0 and 10000')])
     one_year_flex = FloatField(
-        'Percentage of 1 Year Flex', validators=[NumberRange(0, 100)])
+        '$ of 1 Year Flex', validators=[NumberRange(0, 10000,message='Please enter a number between 0 and 10000')])
     sud_percentage = FloatField(
-        'Percentage of average SUD discount on OD Spend', validators=[NumberRange(0, 30)])
+        'Percent of average SUD discount on OD Spend', validators=[NumberRange(0, 50,message='Please enter a number between 0 and 50')])
     submit = SubmitField('Submit')
 
 
@@ -33,30 +32,128 @@ def index():
     if form.validate_on_submit():
         # Perform calculations based on form input
         suds = form.sud_percentage.data/100
-        on_demand_percentage = 100 - \
-            (form.three_year_flex.data) - (form.one_year_flex.data)
-        cost_1_year_flex = (form.hourly_spend.data *
-                            form.one_year_flex.data/100 * (1-.28) * 730)
+        
+        on_demand_percentage = ((form.hourly_spend.data) - (form.three_year_flex.data) - (form.one_year_flex.data))/(form.hourly_spend.data)
+        
+        print('\n'+str(on_demand_percentage)+'\n')
+        
+        commitment_1_year_flex = form.one_year_flex.data
+        commitment_3_year_flex = form.three_year_flex.data
+        
+        cost_1_year_flex = (commitment_1_year_flex * (1-.28))
+        
         cost_3_year_flex = (
-            (form.hourly_spend.data * form.three_year_flex.data/100) * (1-.46)) * 730
-        cost_on_demand = (form.hourly_spend.data *
-                          on_demand_percentage/100 * (1-suds) * 730)
+            (commitment_3_year_flex) * (1-.46)       
+            )
+        
+        cost_on_demand = (
+            (form.hourly_spend.data - form.three_year_flex.data - form.one_year_flex.data) * (1-suds)
+            )
+        
         total_cost = cost_1_year_flex + cost_3_year_flex + cost_on_demand
-        overall_discount = ((form.hourly_spend.data * 730) -
-                            total_cost) / (form.hourly_spend.data * 730)
+        
+        overall_discount = ((form.hourly_spend.data - total_cost)/form.hourly_spend.data)
+        
+        discount = (form.hourly_spend.data - total_cost)/form.hourly_spend.data
+         
+        avail_hourly_od = (form.hourly_spend.data - form.three_year_flex.data - form.one_year_flex.data)
+        
+        monthly_on_demand_cost = form.hourly_spend.data * 730
+        
+        monthly_discount_cost = total_cost * 730
+        
+        hourly_cost= form.hourly_spend.data
+        
+        suds_discount = (avail_hourly_od * suds * -1)
+        
+        final_hourly_od = avail_hourly_od + suds_discount
+        
        # Provide feedback to the user
         flash(f"""
+        <div>
         <table>
-        <tr><td><strong>Customer Name:</strong></td><td>{form.customer_name.data}</td></tr>
-        <tr><td><strong>Hourly Spend:</strong></td><td>${form.hourly_spend.data:.2f}</td></tr>
-    <tr><td><strong>Monthly Spend:</strong></td><td>${form.hourly_spend.data * 730:.2f}</td></tr>
-    <tr><td><strong>3 Year Flex Cost:</strong></td><td>{form.three_year_flex.data}% | ${cost_3_year_flex:.2f}</td></tr>
-    <tr><td><strong>1 Year Flex Cost:</strong></td><td>{form.one_year_flex.data}% | ${cost_1_year_flex:.2f}</td></tr>
-    <tr><td><strong>On Demand Cost:</strong></td><td>{on_demand_percentage:.2f}% | ${cost_on_demand:.2f}</td></tr>
-    <tr><td><strong>Total:</strong></td><td>${total_cost:.2f}</td></tr>
-    <tr><td><strong>Discount:</strong></td><td>{overall_discount*100:.2f}%</td></tr>
+        <thead>
+            <tr>
+                <th class="name" colspan="2" style="font-size: 2em; text-align: center">{form.customer_name.data}</th>
+            </tr>
+        </thead>
+        </div>
+    <tr>
+    <td class="label">Monthly On-Demand<br>Discount-Eligible Spend ($/mo)</td>
+    <td class="data">{format_currency(monthly_on_demand_cost,currency='USD')}
+    </td></tr>
+    
+    <tr>
+        <td class="label">Hourly Spend ($/hr)</td>
+        <td class="data">{format_currency(hourly_cost,currency='USD')}</td>
+    </tr>
+    
+    <tr>
+        <td class="header" colspan="2">Commitments</td>
+    </tr>
+    <tr>
+        <td class="label">3 Year FlexCUD Commitment ($/hr)</td>
+        <td class="data">{format_currency(commitment_3_year_flex, currency='USD')}</td>
+    </tr>
+    
+    <tr>
+    <td class="label">1 Year FlexCUD Commitment ($/hr)</td>
+    <td class="data">{format_currency(commitment_1_year_flex,currency='USD')}
+    </td></tr>
+     <tr>
+        <td class="header" colspan="2">Discounted Costs</td>
+    </tr>
+      
+    <tr>
+    <td class="label">1 Year FlexCUD Cost ($/hr)</td>
+    <td class="data">{format_currency(cost_1_year_flex,currency='USD')}</td>
+    </tr>
+    <tr>
+    <td class="label">3 Year FlexCUD Cost ($/hr)</td>
+    <td class="data">{format_currency(cost_3_year_flex,currency='USD')}</td>
+    </tr>
+      <tr>
+        <td class="header" colspan="2">On-Demand Discounting (SUDS, etc)</td>
+    </tr>
+    <tr>
+    <td class="label">Remaining ODVM Costs ($/hr)</td>
+    <td class="data">{format_currency(avail_hourly_od,currency='USD')}</td>
+    </tr>
+    <tr>
+    <td class="label">SUDs (or ODVM) Discount</td>
+    <td class="data">{format_currency(suds_discount,currency='USD')}</td>
+    </tr>
+    <tr>
+    <td class="label">Final On-Demand Hourly Cost ($/hr)</td>
+    <td class="data">{format_currency(final_hourly_od,currency='USD')}</td>
+    </tr>
+    <tr>
+        <td class="header" colspan="2">Math</td>
+    </tr>
+    <tr>
+    <td class="label">On-Demand Hourly Cost ($/hr)</td>
+    <td class="data">{format_currency(final_hourly_od,currency='USD')}</td>
+    </tr>
+    <tr>
+    <td class="label">+ 1 Yr FlexCUD Hourly Cost ($/hr)</td>
+    <td class="data">{format_currency(cost_1_year_flex,currency='USD')}</td>
+    </tr>
+    <tr>
+    <td class="label">+ 3 Yr FlexCUD Hourly Cost ($/hr)</td>
+    <td class="data">{format_currency(cost_3_year_flex,currency='USD')}</td>
+    </tr>  
+    <tr>
+    <td class="label">= Total Hourly Cost ($/hr)</td>
+    <td class="data">{format_currency(total_cost,currency='USD')}</td>
+    <tr>
+    <td class="label">Total Monthly Cost ($/mo)</td>
+    <td class="data">{format_currency(total_cost*730,currency='USD')}</td></tr>
+    </tr></td>
+    <tr>
+    <td class="label">Discount (%)</td>
+    <td class="data" >{discount*100:.2f}%</td></tr>
 </table>
-""", "success")
+    """, "success")
 
         return redirect(url_for('index'))
 
@@ -71,22 +168,42 @@ TEMPLATE_STRING = '''
         <meta charset="utf-8">
         <title>Compute Form</title>
         <style>
+            td {
+                padding: 10px;
+                font-size: 1.2em;
+                margin: 10px;
+                font-family: Arial, sans-serif;
+            }
+            td.label {
+                text-align: left;
+                }
+            
+            td.data {
+                text-align: right;
+                }
+                
+            td.header {
+                font-size: 1.5em;
+                font-weight: bold;
+                text-align: center;
+                }
+                
             body {
                 font-family: Arial, sans-serif;
                 background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
+                margin: 10;
+                padding: 10;
             }
             table {
-                  width: 100%;
+                  width: 90%;
                 border-collapse: collapse;
                     }
             table, th, td {
-            border: 1px solid #ddd;
+            border: 3px solid black;
             }
-            td {
+            td.label {
             padding: 8px;
-            text-align: left;
+            text-align: center;
             }
 
             h1 {
@@ -111,22 +228,22 @@ TEMPLATE_STRING = '''
                 margin-bottom: 10px;
             }
             input[type="text"], input[type="number"], input[type="submit"] {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ccc;
+                width: 95%;
+                padding: 5px;
+                border: 3px solid #ccc;
                 border-radius: 4px;
             }
             input[type="submit"] {
                 background-color: #007BFF;
                 color: #fff;
                 cursor: pointer;
-                border: none;
+                border: 1px solid #007BFF;
             }
             input[type="submit"]:hover {
                 background-color: #0056b3;
             }
             ul {
-                max-width: 500px;
+                max-width: 700px;
                 margin: 20px auto;
             }
             li {

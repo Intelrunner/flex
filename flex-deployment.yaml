@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flex-deployment
+  labels:
+    app: flex
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flex
+  template:
+    metadata:
+      labels:
+        app: flex
+    spec:
+      containers:
+      - name: flex-container
+        image: us-docker.pkg.dev/eric-playground-298616/artifacts/flex:v2
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi

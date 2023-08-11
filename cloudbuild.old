@@ -1,0 +1,94 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-docker.pkg.dev/eric-playground-298616/artifacts/flex-image:v1', '.']
+    dir: '/workspace'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-docker.pkg.dev/eric-playground-298616/artifacts/flex-image:v1']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'container'
+      - 'images'
+      - 'add-tag'
+      - 'us-docker.pkg.dev/eric-playground-298616/artifacts/flex-image:v1'
+      - 'us-docker.pkg.dev/eric-playground-298616/artifacts/flex-image:latest'
+    
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'flex'
+      - '--image'
+      - 'us-docker.pkg.dev/eric-playground-298616/artifacts/flex-image:v1'
+      - '--platform'
+      - 'gke'
+      - '--cluster'
+      - 'flex-cluster'
+      - '--cluster-location'
+      - 'us-central1'
+      - '--port'
+      - '8080'
+    
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'compute'
+      - 'addresses'
+      - 'create'
+      - 'flex-ip'
+      - '--global'
+    
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'compute'
+      - 'addresses'
+      - 'describe'
+      - 'flex-ip'
+      - '--global'
+      - '--format'
+      - 'value(address)'
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'compute'
+      - 'addresses'
+      - 'describe'
+      - 'flex-ip'
+      - '--global'
+      - '--format'
+      - 'value(address) > address.txt'
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'dns'
+      - 'record-sets'
+      - 'transaction'
+      - 'start'
+      - '--zone'
+      - 'wasteland'
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'dns'
+      - 'record-sets'
+      - 'transaction'
+      - 'add'
+      - "$(cat address.txt)"
+      - '--name'
+      - 'flex'
+      - '--ttl'
+      - '300'
+      - '--type'
+      - 'A'
+      - '--zone'
+      - 'wasteland'
+
+    
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'dns'
+      - 'record-sets'
+      - 'transaction'
+      - 'execute'
+      - '--zone'
+      - 'wasteland'
