@@ -1,0 +1,292 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "6"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"flex"},"name":"flex-deployment","namespace":"default"},"spec":{"replicas":3,"selector":{"matchLabels":{"app":"flex"}},"template":{"metadata":{"labels":{"app":"flex"}},"spec":{"containers":[{"image":"us-docker.pkg.dev/eric-playground-298616/artifacts/flex:v2","name":"flex-container","ports":[{"containerPort":8080}],"resources":{"limits":{"cpu":"100m","memory":"100Mi"},"requests":{"cpu":"100m","memory":"100Mi"}}}]}}}}
+  creationTimestamp: "2023-08-09T21:00:06Z"
+  generation: 8
+  labels:
+    app: flex
+  name: flex-deployment
+  namespace: default
+  resourceVersion: "50176810"
+  uid: f6a42fa9-fa31-4579-9e02-0630421e5318
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: flex
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 2
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: flex
+    spec:
+      containers:
+      - image: us-docker.pkg.dev/eric-playground-298616/artifacts/flex
+        imagePullPolicy: Always
+        name: flex-container
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 3
+  conditions:
+  - lastTransitionTime: "2023-08-10T00:40:59Z"
+    lastUpdateTime: "2023-08-10T00:40:59Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2023-08-10T00:24:38Z"
+    lastUpdateTime: "2023-08-10T03:08:42Z"
+    message: ReplicaSet "flex-deployment-5cfb499565" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 8
+  readyReplicas: 3
+  replicas: 3
+  updatedReplicas: 3
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "6"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"flex"},"name":"flex-deployment","namespace":"default"},"spec":{"replicas":3,"selector":{"matchLabels":{"app":"flex"}},"template":{"metadata":{"labels":{"app":"flex"}},"spec":{"containers":[{"image":"us-docker.pkg.dev/eric-playground-298616/artifacts/flex:v2","name":"flex-container","ports":[{"containerPort":8080}],"resources":{"limits":{"cpu":"100m","memory":"100Mi"},"requests":{"cpu":"100m","memory":"100Mi"}}}]}}}}
+  creationTimestamp: "2023-08-09T21:00:06Z"
+  generation: 8
+  labels:
+    app: flex
+  name: flex-deployment
+  namespace: default
+  resourceVersion: "50176810"
+  uid: f6a42fa9-fa31-4579-9e02-0630421e5318
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: flex
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 2
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: flex
+    spec:
+      containers:
+      - image: us-docker.pkg.dev/eric-playground-298616/artifacts/flex:v2
+        imagePullPolicy: Always
+        name: flex-container
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 3
+  conditions:
+  - lastTransitionTime: "2023-08-10T00:40:59Z"
+    lastUpdateTime: "2023-08-10T00:40:59Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2023-08-10T00:24:38Z"
+    lastUpdateTime: "2023-08-10T03:08:42Z"
+    message: ReplicaSet "flex-deployment-5cfb499565" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 8
+  readyReplicas: 3
+  replicas: 3
+  updatedReplicas: 3
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "6"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"flex"},"name":"flex-deployment","namespace":"default"},"spec":{"replicas":3,"selector":{"matchLabels":{"app":"flex"}},"template":{"metadata":{"labels":{"app":"flex"}},"spec":{"containers":[{"image":"us-docker.pkg.dev/eric-playground-298616/artifacts/flex:v2","name":"flex-container","ports":[{"containerPort":8080}],"resources":{"limits":{"cpu":"100m","memory":"100Mi"},"requests":{"cpu":"100m","memory":"100Mi"}}}]}}}}
+  creationTimestamp: "2023-08-09T21:00:06Z"
+  generation: 8
+  labels:
+    app: flex
+  name: flex-deployment
+  namespace: default
+  resourceVersion: "50176810"
+  uid: f6a42fa9-fa31-4579-9e02-0630421e5318
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: flex
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 2
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: flex
+    spec:
+      containers:
+      - image: us-docker.pkg.dev/eric-playground-298616/artifacts/flex:v2
+        imagePullPolicy: Always
+        name: flex-container
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 3
+  conditions:
+  - lastTransitionTime: "2023-08-10T00:40:59Z"
+    lastUpdateTime: "2023-08-10T00:40:59Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2023-08-10T00:24:38Z"
+    lastUpdateTime: "2023-08-10T03:08:42Z"
+    message: ReplicaSet "flex-deployment-5cfb499565" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 8
+  readyReplicas: 3
+  replicas: 3
+  updatedReplicas: 3
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "6"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"flex"},"name":"flex-deployment","namespace":"default"},"spec":{"replicas":3,"selector":{"matchLabels":{"app":"flex"}},"template":{"metadata":{"labels":{"app":"flex"}},"spec":{"containers":[{"image":"us-docker.pkg.dev/eric-playground-298616/artifacts/flex:v2","name":"flex-container","ports":[{"containerPort":8080}],"resources":{"limits":{"cpu":"100m","memory":"100Mi"},"requests":{"cpu":"100m","memory":"100Mi"}}}]}}}}
+  creationTimestamp: "2023-08-09T21:00:06Z"
+  generation: 8
+  labels:
+    app: flex
+  name: flex-deployment
+  namespace: default
+  resourceVersion: "50176810"
+  uid: f6a42fa9-fa31-4579-9e02-0630421e5318
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: flex
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 2
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: flex
+    spec:
+      containers:
+      - image: us-docker.pkg.dev/eric-playground-298616/artifacts/flex:v2
+        imagePullPolicy: Always
+        name: flex-container
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 3
+  conditions:
+  - lastTransitionTime: "2023-08-10T00:40:59Z"
+    lastUpdateTime: "2023-08-10T00:40:59Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2023-08-10T00:24:38Z"
+    lastUpdateTime: "2023-08-10T03:08:42Z"
+    message: ReplicaSet "flex-deployment-5cfb499565" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 8
+  readyReplicas: 3
+  replicas: 3
+  updatedReplicas: 3

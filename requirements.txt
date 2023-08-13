@@ -1,4 +1,5 @@
-Flask==2.2.3
-Flask_WTF==1.1.1
-WTForms==3.0.1
+Flask
+Flask_WTF
+WTForms
 gunicorn
+babel

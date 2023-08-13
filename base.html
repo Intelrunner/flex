@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Compute Form</title>
+        <style>
+            td {
+                padding: 10px;
+                font-size: 1.2em;
+                margin: 10px;
+                font-family: Arial, sans-serif;
+            }
+            td.label {
+                text-align: left;
+                }
+            
+            td.data {
+                text-align: right;
+                }
+                
+            td.header {
+                font-size: 1.5em;
+                font-weight: bold;
+                text-align: center;
+                }
+                
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 10;
+                padding: 10;
+            }
+            table {
+                  width: 90%;
+                border-collapse: collapse;
+                    }
+            table, th, td {
+            border: 3px solid black;
+            }
+            td.label {
+            padding: 8px;
+            text-align: center;
+            }
+
+            h1 {
+                background-color: #333;
+                color: white;
+                padding: 20px;
+                text-align: center;
+            }
+            form {
+                background-color: #fff;
+                max-width: 500px;
+                margin: 40px auto;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            p {
+                margin-bottom: 20px;
+            }
+            label {
+                display: block;
+                margin-bottom: 10px;
+            }
+            input[type="text"], input[type="number"], input[type="submit"] {
+                width: 95%;
+                padding: 5px;
+                border: 3px solid #ccc;
+                border-radius: 4px;
+            }
+            input[type="submit"] {
+                background-color: #007BFF;
+                color: #fff;
+                cursor: pointer;
+                border: 1px solid #007BFF;
+            }
+            input[type="submit"]:hover {
+                background-color: #0056b3;
+            }
+            ul {
+                max-width: 700px;
+                margin: 20px auto;
+            }
+            li {
+                background-color: #dff0d8; /* for the success category, adjust if needed */
+                margin-bottom: 10px;
+                padding: 10px;
+                border-radius: 4px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Compute Form</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <p>{{ form.customer_name.label }}<br>{{ form.customer_name }}</p>
+            <p>{{ form.hourly_spend.label }}<br>{{ form.hourly_spend }}</p>
+            <p>{{ form.three_year_flex.label }}<br>{{ form.three_year_flex }}</p>
+            <p>{{ form.one_year_flex.label }}<br>{{ form.one_year_flex }}</p>
+            <p>{{ form.sud_percentage.label }}<br>{{ form.sud_percentage }}</p>
+            <p>{{ form.submit() }}</p>
+        </form>
+        {% if on_demand_percentage is not none %}
+            <p><strong>On Demand %:</strong> {{ on_demand_percentage }} %</p>
+        {% endif %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul>
+            {% for category, message in messages %}
+            <li{% if category %} class="{{ category }}"{% endif %}>{{ message|safe }}</li>
+
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+    </body>
+</html>

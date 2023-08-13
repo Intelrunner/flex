@@ -8,23 +8,32 @@ app = Flask(__name__)
 # Use environment variable for secret key
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'boobookitty')
 
+
 class ComputeForm(FlaskForm):
-    customer_name = StringField('Customer Name', validators=[DataRequired(message='Please enter a customer name')])
+    customer_name = StringField('Customer Name', validators=[
+                                DataRequired(message='Please enter a customer name')])
     hourly_spend = FloatField(
-        'Hourly Spend on Eligible Compute (in $)', validators=[NumberRange(0, 10000, message='Please enter a number between 0 and 10000')])
-    three_year_flex = FloatField('$ of 3 Year Flex', validators=[
-                                NumberRange(0, 10000,message='Please enter a number between 0 and 10000')])
-    one_year_flex = FloatField(
-        '$ of 1 Year Flex', validators=[NumberRange(0, 10000,message='Please enter a number between 0 and 10000')])
+        'Hourly Spend on Eligible Compute (in $)',
+        validators=[NumberRange(
+            0, 10000, message='Please enter a number between 0 and 10000')]
+    )
+    three_year_flex = FloatField('3 Year FlexCUD Commitment ($/hr)',
+                                 validators=[
+                                     NumberRange(0, 10000,
+                                                 message='Please enter a number between 0 and 10000')
+                                 ])
+    one_year_flex = FloatField('1 Year FlexCUD Commitment ($/hr)', validators=[
+                               NumberRange(0, 10000, message='Please enter a number between 0 and 10000')])
+
     sud_percentage = FloatField(
-        'Percent of average SUD discount on OD Spend', validators=[NumberRange(0, 50,message='Please enter a number between 0 and 50')])
-    submit = SubmitField('Submit')
+        'Percent of SUD (or ODVM) discount on OD Spend', validators=[NumberRange(0, 100, message='Please enter a number between 0 and 50')])
+
+    submit = SubmitField('Push it. Push it real good.')
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = ComputeForm()
-    on_demand_percentage = None
     cost_3_year_flex = None
     cost_1_year_flex = None
     cost_on_demand = None
@@ -32,42 +41,40 @@ def index():
     if form.validate_on_submit():
         # Perform calculations based on form input
         suds = form.sud_percentage.data/100
-        
-        on_demand_percentage = ((form.hourly_spend.data) - (form.three_year_flex.data) - (form.one_year_flex.data))/(form.hourly_spend.data)
-        
-        print('\n'+str(on_demand_percentage)+'\n')
-        
         commitment_1_year_flex = form.one_year_flex.data
         commitment_3_year_flex = form.three_year_flex.data
-        
+
         cost_1_year_flex = (commitment_1_year_flex * (1-.28))
-        
+
         cost_3_year_flex = (
-            (commitment_3_year_flex) * (1-.46)       
-            )
-        
+            (commitment_3_year_flex) * (1-.46)
+        )
+
         cost_on_demand = (
-            (form.hourly_spend.data - form.three_year_flex.data - form.one_year_flex.data) * (1-suds)
-            )
-        
+            (form.hourly_spend.data - form.three_year_flex.data -
+             form.one_year_flex.data) * (1-suds)
+        )
+
         total_cost = cost_1_year_flex + cost_3_year_flex + cost_on_demand
-        
-        overall_discount = ((form.hourly_spend.data - total_cost)/form.hourly_spend.data)
-        
+
+        overall_discount = (
+            (form.hourly_spend.data - total_cost)/form.hourly_spend.data)
+
         discount = (form.hourly_spend.data - total_cost)/form.hourly_spend.data
-         
-        avail_hourly_od = (form.hourly_spend.data - form.three_year_flex.data - form.one_year_flex.data)
-        
+
+        avail_hourly_od = (form.hourly_spend.data -
+                           form.three_year_flex.data - form.one_year_flex.data)
+
         monthly_on_demand_cost = form.hourly_spend.data * 730
-        
+
         monthly_discount_cost = total_cost * 730
-        
-        hourly_cost= form.hourly_spend.data
-        
+
+        hourly_cost = form.hourly_spend.data
+
         suds_discount = (avail_hourly_od * suds * -1)
-        
+
         final_hourly_od = avail_hourly_od + suds_discount
-        
+
        # Provide feedback to the user
         flash(f"""
         <div>
@@ -158,7 +165,7 @@ def index():
         return redirect(url_for('index'))
 
     # Return the rendered form
-    return render_template_string(TEMPLATE_STRING, form=form, on_demand_percentage=on_demand_percentage)
+    return render_template_string(TEMPLATE_STRING, form=form, title="FlexCUD Calculator Extravaganza")
 
 
 TEMPLATE_STRING = '''
@@ -166,7 +173,7 @@ TEMPLATE_STRING = '''
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Compute Form</title>
+        <title>{{title}}</title>
         <style>
             td {
                 padding: 10px;
@@ -214,49 +221,62 @@ TEMPLATE_STRING = '''
             }
             form {
                 background-color: #fff;
+                font-size: 1.4em;
                 max-width: 500px;
                 margin: 40px auto;
-                padding: 20px;
-                border-radius: 8px;
+                padding: 15px;
+                border-radius: 5px;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             }
+            
+        
             p {
-                margin-bottom: 20px;
-            }
-            label {
-                display: block;
                 margin-bottom: 10px;
             }
-            input[type="text"], input[type="number"], input[type="submit"] {
-                width: 95%;
-                padding: 5px;
-                border: 3px solid #ccc;
-                border-radius: 4px;
+            label {
+                display: ;
+                margin-bottom: 1px;
+            }
+            input[type="text"], input[type="number"] {
+                width: 90%;
+                padding: 15px;
+                border: 3px solid #119AFF;
+                border-radius: 25px;
+                ;
             }
             input[type="submit"] {
                 background-color: #007BFF;
-                color: #fff;
-                cursor: pointer;
-                border: 1px solid #007BFF;
-            }
+                color: #fff;;
+                border: 5px solid #7BFF;
+                border-radius: 15px;
+                font-size: 1.3em;
+                width: 100%;
+                }
+                
             input[type="submit"]:hover {
-                background-color: #0056b3;
+                background-color: #ADA;
+                -webkit-transition: background-color 0.4s ease-in-out;
+                                
             }
             ul {
                 max-width: 700px;
                 margin: 20px auto;
             }
             li {
-                background-color: #dff0d8; /* for the success category, adjust if needed */
+                background-color: #FA1; /* for the success category, adjust if needed */
                 margin-bottom: 10px;
                 padding: 10px;
                 border-radius: 4px;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             }
+            .error {
+                background-color: #FDD;
+                }
+}
         </style>
     </head>
     <body>
-        <h1>Compute Form</h1>
+        <h1>{{title}}</h1>
         <form method="post">
             {{ form.hidden_tag() }}
             <p>{{ form.customer_name.label }}<br>{{ form.customer_name }}</p>
@@ -266,9 +286,6 @@ TEMPLATE_STRING = '''
             <p>{{ form.sud_percentage.label }}<br>{{ form.sud_percentage }}</p>
             <p>{{ form.submit() }}</p>
         </form>
-        {% if on_demand_percentage is not none %}
-            <p><strong>On Demand %:</strong> {{ on_demand_percentage }} %</p>
-        {% endif %}
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <ul>
